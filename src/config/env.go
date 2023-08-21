@@ -12,6 +12,9 @@ type Environment struct {
 }
 
 var env *Environment
+var defaultEnv = &Environment{
+	Timeout: 25,
+}
 
 func Load() error {
 	err := godotenv.Load(".env")
@@ -20,9 +23,16 @@ func Load() error {
 	}
 
 	envTimeout := os.Getenv("TIMEOUT")
-	timeout, err := strconv.Atoi(envTimeout)
-	if err != nil {
-		return ErrConvertTimeout
+	var timeout int
+	if len(envTimeout) == 0 {
+		timeout = defaultEnv.Timeout // Default time
+	} else {
+		convertedTimeout, err := strconv.Atoi(envTimeout)
+		if err != nil {
+			return ErrConvertTimeout
+		}
+
+		timeout = convertedTimeout
 	}
 
 	env = &Environment{
