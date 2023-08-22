@@ -8,12 +8,15 @@ import (
 )
 
 type Environment struct {
-	Timeout int
+	Timeout  int
+	Key      string
+	Endpoint string
 }
 
 var env *Environment
 var defaultEnv = &Environment{
-	Timeout: 25,
+	Timeout:  25,
+	Endpoint: "https://newsapi.org/v2",
 }
 
 func Load() error {
@@ -35,8 +38,21 @@ func Load() error {
 		timeout = convertedTimeout
 	}
 
+	envKey := os.Getenv("API_KEY")
+	if len(envKey) == 0 {
+		return ErrApiKeyNotFound
+	}
+
+	envEndpoint := os.Getenv("API_ENDPOINT")
+	endpoint := envEndpoint
+	if len(envEndpoint) == 0 {
+		endpoint = defaultEnv.Endpoint
+	}
+
 	env = &Environment{
-		Timeout: timeout,
+		Timeout:  timeout,
+		Key:      envKey,
+		Endpoint: endpoint,
 	}
 
 	return nil
