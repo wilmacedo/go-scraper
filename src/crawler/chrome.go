@@ -10,7 +10,7 @@ import (
 	"github.com/chromedp/chromedp"
 )
 
-func Run(domain string) (string, error) {
+func Run(domain config.Domain) (string, error) {
 	ctx, cancel := chromedp.NewContext(context.Background())
 	defer cancel()
 
@@ -19,14 +19,14 @@ func Run(domain string) (string, error) {
 	defer cancel()
 
 	start := time.Now()
-	var title string
+	var value string
 	err := chromedp.Run(
 		ctx,
-		chromedp.Navigate(domain),
-		chromedp.Text(".text-3xl", &title, chromedp.NodeVisible),
+		chromedp.Navigate(domain.URL),
+		chromedp.Text(domain.Tag, &value, chromedp.NodeVisible),
 	)
 
 	log.Printf("Finished crawler in %s", time.Since(start))
 
-	return title, err
+	return value, err
 }
